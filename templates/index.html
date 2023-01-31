@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+   <link rel="stylesheet" href="{{url_for('static', filename='css/index.css')}}" >
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <style>
+    .firstrow{grid-row: 2;}
+    .secondrow{grid-row: 2;}
+    .thirdrow{grid-row: 3;}
+    .formrow{length:40%}
+    </style>
+</head>
+<body>
+	<div class="create_lot">
+		<a href="/index/create">Подать объявление</a>
+	</div>
+    <form>
+  <div class="form-row">
+		<div class="firstrow">
+			<div class="col-4">
+				<select name="model" class="custom-select">
+					{% for label in labels %}
+					   <option>{{label.label}}</option>
+					{% endfor %}
+    			</select>
+			</div>
+			<div class="col-4">
+				<input type="text" class="form-control" placeholder="модель">
+			</div>
+			<div class="col-4">
+				<input type="text" class="form-control" placeholder="поколение">
+			</div>
+		</div>
+		<div class="secondrow">
+			<div class="col-4">
+				<input type="text" class="form-control" placeholder="цена от">
+				<input type="text" class="form-control" placeholder="до">
+			</div>
+			<div class="col-4">
+				<input type="text" class="form-control" placeholder="год от">
+				<input type="text" class="form-control" placeholder="до">
+			</div>
+			<div class="col-2">
+				<input type="text" class="form-control" placeholder="КПП">
+			</div>
+			<div class="col-2">
+				<input type="text" class="form-control" placeholder="топливо">
+			</div>
+		</div>
+		<div class="thirdrow">
+			<div class="col-4">
+				<input type="text" class="form-control" placeholder="обьем от, Л">
+				<input type="text" class="form-control" placeholder="до">
+			</div>
+			<div class="col-4">
+				<input type="text" class="form-control" placeholder="привод">
+			</div>
+			<div>
+
+<div class="form-check form-check-inline">
+  <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+  <label class="form-check-label" for="inlineCheckbox1">непроданные</label>
+</div>
+<div class="form-check form-check-inline">
+  <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+  <label class="form-check-label" for="inlineCheckbox2">с фото</label>
+</div>
+
+			</div>
+		</div>
+  </div>
+</form>
+    <div class="ad_list">
+        {% for lot in lots %}
+        <div class="ad">
+            <div class="ad_image">
+                <img src="delorean.jpg">
+            </div>
+            <div class="ad_labels">
+                {{lot.model.producer.label}}
+                {{lot.model.label}} <br>
+                Пробег: {{lot.mileage}} км.
+
+            </div>
+            <div class="ad_nums">
+                <div class="ad_price">{{lot.price}}</div>
+                <div class="ad_place">{{lot.location}}</div>
+                <div class="ad_date">2023-01-17</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

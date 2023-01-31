@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% if autolabel.label %}
+<div><img src="{{url_for('static', filename=autolabel.avatar_path)}}" alt="" width="300px"></div>
+{% endif %}
+Label: {{autolabel.label}} <br>
+Country: {{autolabel.country}} <br>
+Foundation: {{autolabel.foundation_year}} <br>
+{% if autolabel.liqudation_year %}
+Liqudation: {{autolabel.liqudation_year}} <br>
+ {% endif %}
+<hr>
+{% for model in autolabel.models%}
+{{model}}
+{%endfor%}
+</body>
+</html>

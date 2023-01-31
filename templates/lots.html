@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+  {% for lot in autolots %}
+  <div>
+    <a href ='lots/{{lot.id}}'>
+    <div>{{lot.price}}</div>
+    <div>{{lot.model.label}}</div>
+    <div>{{lot.model.producer.label}}</div>
+    </a>
+  </div>
+{% endfor %}
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% with messages = get_flashed_messages() %}
+   {% if messages %}
+      {% for message in messages %}
+         {{ message }}
+      {% endfor %}
+   {% endif %}
+{% endwith %}
+<form method="post" enctype="multipart/form-data">
+    <div>Модель: <select name="model">
+        {% for model in models %}
+           <option>{{model.label}}</option>
+        {% endfor %}
+    </select> </div>
+<div>Цена:<input type="int" name="price"></div>
+<div>Пробег:<input type="int" name="mileage"></div>
+<div>Год производства:<input type="int" name="prod_year"></div>
+<div>Цвет:<input type="text" name="color"></div>
+<div>Фото: <input type="file" name="file"  accept="image/*">  </div>
+<div>Местоположение:<input type="text" name="location"></div>
+<input type="submit">
+</body>
+</html>

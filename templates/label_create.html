@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% with messages = get_flashed_messages() %}
+   {% if messages %}
+      {% for message in messages %}
+         {{ message }}
+      {% endfor %}
+   {% endif %}
+{% endwith %}
+<form method="post" enctype="multipart/form-data">
+<div>Марка:<input type="text" name="label"></div>
+<div>Страна:<input type="text" name="country"></div>
+<div>Год основания:<input type="text" name="f_year"></div>
+<div>Год ликвидации:<input type="text" name="l_year"></div>
+<div>Логотип: <input type="file" name="file"  accept="image/*">  </div>
+<input type="submit">
+
+
+</form>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    	<style>
+		.c_post{
+			width 96%;
+			border: 3px solid black;
+		}
+		.ttt{
+			width 10%;
+			height 200px;
+			border: 5px solid green;
+			
+		}
+		.ob{
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+{% with messages = get_flashed_messages() %}
+   {% if messages %}
+      {% for message in messages %}
+         {{ message }}
+      {% endfor %}
+   {% endif %}
+{% endwith %}
+<h1 class="ob">Подать заявление о продаже автомобиля</h1>
+<div class="c_post">
+<form method="post" enctype="multipart/form-data">
+    <div class="ob">Модель: <select name="model">
+        {% for model in models %}
+           <option>{{model.label}}</option>
+        {% endfor %}
+    </select> </div>
+<div class="ttt">Цена:<input type="int" name="price"></div>
+<div></div>
+<div>Пробег:<input type="int" name="mileage"></div>
+<div>Год производства:<input type="int" name="prod_year"></div>
+<div>Цвет:<input type="text" name="color"></div>
+<div>Загрузить Фото: <input type="file" name="file"  accept="image/*">  </div>
+<div>Местоположение:<input type="text" name="location"></div>
+</div>
+<input type="submit">
+</body>
+</html>

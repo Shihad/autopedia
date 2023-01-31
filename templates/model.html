@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+ Label: {{automodel.label}} <br>
+producer: {{automodel.prodname}} <br>
+Foundation: {{automodel.start_prod_year}} <br>
+{% if automodel.end_prod_year %}
+Liqudation: {{automodel.end_prod_year}} <br>
+ {% endif %}
+</body>
+</html>
