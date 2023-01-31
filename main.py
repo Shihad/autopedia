@@ -171,7 +171,7 @@ def lot_create_admin():
         return redirect("/lots")
 
 @app.route("/api/index/update/<label>")
-def update_main(label):
+def update_label(label):
     label_id=AutolabelModel.query.filter_by(label=label).first().id
     models=AutomodelsModel.query.filter_by(prod_id=label_id).all()
     lots=[]
@@ -183,11 +183,13 @@ def update_main(label):
 
 
 @app.route("/api/index/updatemodel/<model>")
-def update_main1(model):
-    models=AutomodelsModel.query.filter_by(label=model).first_or_404()
-    lots=LotModel.query.filter_by(model_id=models.id).all()
+def update_model(model):
+    labels=AutolabelModel.query.filter_by(model=model).all
+    models=AutomodelsModel.query.filter_by(prod_id=label_id).all()
+    lots=[]
+    for model in models:
+        lots.extend(LotModel.query.filter_by(model_id=model.id).all())
     print(lots)
-    labels = AutolabelModel.query.all()
     return render_template('index.html', lots=lots, labels=labels)
 
 app.run()
