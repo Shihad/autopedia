@@ -61,6 +61,7 @@ class LotModel(db.Model):
         self.mileage=mileage
         self.prod_year=prod_year
         self.color=color
-        #self.photo=photo
         self.location=location
 
+    def set_photo(self, photo):
+        self.photo = f"img/lots/{self.id}/1.png"

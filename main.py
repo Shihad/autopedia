@@ -8,8 +8,9 @@ app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
-#@app.before_first_request
+@app.before_first_request
 def create_table():
+    db.drop_all()
     db.create_all()
     label1=AutolabelModel('Ford','USA',1903)
     label2 = AutolabelModel('GAZ', 'Russia', 1933)
@@ -32,6 +33,14 @@ def create_table():
     db.session.add(lot2)
     db.session.add(lot3)
     db.session.commit()
+    lot1.set_photo("1.png")
+    lot2.set_photo("1.png")
+    lot3.set_photo("1.png")
+    db.session.add(lot1)
+    db.session.add(lot2)
+    db.session.add(lot3)
+    db.session.commit()
+
 
 
 @app.route("/index")
@@ -56,6 +65,9 @@ def lot_create_user():
         prod_year=request.form['prod_year']
         color=request.form['color']
         location = request.form['location']
+        lot = LotModel(model.id, price, mileage, prod_year, color, location)
+        db.session.add(lot)
+        db.session.commit()
         if 'file' not in request.files:
             flash("No file part")
             return render_template('lot_create.html')
@@ -64,11 +76,14 @@ def lot_create_user():
             flash('No selected file')
             return render_template('lot_create.html')
         if file:
-            file.save(os.path.join(f"static/img/labels", f"{model_name}.png"))
-        lot = LotModel(model.id, price, mileage,prod_year, color, location)
+            directory=f"static/img/lots/{lot.id}"
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            file.save(os.path.join(directory, f"{1}.png"))
+        lot.set_photo("1.png")
         db.session.add(lot)
         db.session.commit()
-        return redirect("/lots")
+        return redirect("/index")
 
 
 @app.route("/labels")
