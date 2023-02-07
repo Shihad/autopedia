@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect,flash
 from models import db, AutolabelModel, AutomodelsModel, LotModel
 import os
-
+import random
 app = Flask(__name__)
 app.secret_key = 'some_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///database.db'
@@ -179,8 +179,9 @@ def lot_create_admin():
             flash('No selected file')
             return render_template('lot_create.html')
         if file:
-            file.save(os.path.join(f"static/img/labels", f"{model_name}.png"))
-        lot = LotModel(model.id, price, mileage,prod_year, color, location)
+            photopath=model_name+str(random.randint(1,1000))
+            file.save(os.path.join(f"static/img/labels", f"{photopath}.png"))
+        lot = LotModel(model.id, price, mileage,prod_year, color, location,photopath)
         db.session.add(lot)
         db.session.commit()
         return redirect("/lots")

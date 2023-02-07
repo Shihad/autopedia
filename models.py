@@ -33,15 +33,20 @@ class AutomodelsModel(db.Model):
     start_prod_year=db.Column(db.Integer)
     end_prod_year = db.Column(db.Integer)
     lots = db.relationship('LotModel', backref="model")
+    avatar_path=db.Column(db.String(100))
 
     def __init__(self,label, prod_id, f_year, l_year=None):
         self.label=label
         self.prod_id=prod_id
         self.start_prod_year=f_year
         self.end_prod_year=l_year
+        self.avatar_path = f"img/models/{self.label}.png"
 
     def __repr__(self):
         return f"{self.label} was model for {self.producer.label} and production started in {self.start_prod_year}"
+
+    def set_photo(self, photo):
+        self.photo = f"img/models/{self.label}/1.png"
 
 class LotModel(db.Model):
     __tablename__="lot"
@@ -52,15 +57,17 @@ class LotModel(db.Model):
     mileage=db.Column(db.Integer)
     prod_year=db.Column(db.Integer)
     color=db.Column(db.String)
-    photo=db.Column(db.String)
+    #photo=db.Column(db.String)
     location=db.Column(db.String)
-
+    photopath=db.Column(db.String(100))
     def __init__(self,model_id,price,mileage,prod_year,color,location):
         self.model_id=model_id
         self.price=price
         self.mileage=mileage
         self.prod_year=prod_year
         self.color=color
+        self.photo_path=f"img/lots/{self.id}/1.png"
+       # self.avatar_path=f"img/labels/{self.model_name}.png"
         self.location=location
 
     def set_photo(self, photo):
