@@ -2,36 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Регистрация</title>
-    <style>
-        .Reg {
-        width: 100%;
-        height 850px;
-        border 5px solid black;
-        text-align: center;
-        }
-        .log {
-        width: 300px;
-        height:50px;
-        text-align: center;
-        align: center;
-        }
-        .wi {
-        align: center;
-        width:300px%;
-        height:100px;
-        border: 5px solid black;
-        }
-    </style>
+
+    <title>Title</title>
 </head>
 <body>
-<div class="Reg">
-        <div class="wi">Регистрация</div>
-        <div class="log">Имя:</div>
-        <div class="log">Фамилия:</div>
-        <div class="log">Отчество(если есть):</div>
-        <div class="log">Номер телефона:</div>
-        <div class="log">Почта:</div>
-</div>
+<form action="" method="post">
+  {% form.csrf_token() %}
+  {{ form.login.label()}}
+  {% for error in form.login.errors() %}
+  {{error}}
+  {% endfor %}
+  {{ form.login()}}
+  <br>
+   {{ form.password.label()}}
+  {% for error in form.password.errors() %}
+  {{error}}
+  {% endfor %}
+  {{ form.password()}}
+   <br>
+   {{ form.password2.label()}}
+  {% for error in form.password2.errors() %}
+  {{error}}
+  {% endfor %}
+  {{ form.password()}}
+    <br>
+   {{ form.email.label()}}
+  {% for error in form.email.errors() %}
+  {{error}}
+  {% endfor %}
+  {{ form.password()}}
+   <br>
+  {{ form.submit() }}
+</form>
 </body>
 </html>
