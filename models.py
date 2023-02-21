@@ -65,3 +65,18 @@ class LotModel(db.Model):
 
     def set_photo(self, photo):
         self.photo = f"img/lots/{self.id}/1.png"
+
+class PhotoModel(db.Model):
+    __tablename__="photo"
+    id = db.Column(db.Integer, primary_key=True)
+    filename=db.Column(db.String)
+    date=db.Column(db.Integer)
+    advert=db.Column(db.String)
+    photo=db.Column(db.String)
+
+    def __init__(self,filename):
+        self.filename=filename
+        #self.date=
+
+    def set_photo(self, photo):
+        self.photo = f"img/lots/{self.id}/1.png"

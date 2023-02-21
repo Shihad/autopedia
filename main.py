@@ -62,6 +62,17 @@ def login():
         password = request.form.get('password')
     return render_template("login.html", form=form)
 
+@app.route('/register', methods=['post','get'])
+def register():
+    username=''
+    email=''
+    password=''
+    repeat_password=''
+    form = RegisterForm()
+    if form.validate_on_submit():
+        username=request.form.get('login')
+        password=request.form.get('password')
+    return render_template("login.html", form=form)
 
 @app.route("/index/create", methods=['post','get'])
 def lot_create_user():
@@ -211,7 +222,7 @@ def update_label(label):
 @app.route("/api/index/updatemodel/<model>")
 def update_model(model):
     labels=AutolabelModel.query.filter_by(model=model).all
-    models=AutomodelsModel.query.filter_by(prod_id=label_id).all()
+    models=AutomodelsModel.query.filter_by(prod_id=label.id).all()
     lots=[]
     for model in models:
         lots.extend(LotModel.query.filter_by(model_id=model.id).all())
