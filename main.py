@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect,flash
 from models import db, AutolabelModel, AutomodelsModel, LotModel
-from forms import LoginForm
+from forms import LoginForm, SignUpForm
 import os
 
 app = Flask(__name__)
@@ -62,6 +62,22 @@ def login():
         password = request.form.get('password')
     return render_template("login.html", form=form)
 
+
+@app.route("/signup", methods=['post','get'])
+def signup():
+    username=""
+    password=""
+    password2=""
+    email=""
+    form = SignUpForm()
+    if form.validate_on_submit():
+        password2=request.form.get('password2')
+        password = request.form.get('password')
+        if password == password2:
+            username=request.form.get('login')
+            email = request.form.get('email')
+    return render_template("signup.html", form=form)
+
 @app.route('/register', methods=['post','get'])
 def register():
     username=''
@@ -73,6 +89,7 @@ def register():
         username=request.form.get('login')
         password=request.form.get('password')
     return render_template("login.html", form=form)
+
 
 @app.route("/index/create", methods=['post','get'])
 def lot_create_user():
