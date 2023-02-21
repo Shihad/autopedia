@@ -1,11 +1,13 @@
 from flask import Flask, render_template, request, redirect,flash
 from models import db, AutolabelModel, AutomodelsModel, LotModel
+from forms import LoginForm
 import os
 
 app = Flask(__name__)
 app.secret_key = 'some_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'you_cant_guess_this_key'
 db.init_app(app)
 
 @app.before_first_request
@@ -50,6 +52,15 @@ def index():
     labels=AutolabelModel.query.all()
     return render_template('index.html', lots=lots,labels=labels)
 
+@app.route("/login", methods=['post','get'])
+def login():
+    username=""
+    password=""
+    form = LoginForm()
+    if form.validate_on_submit():
+        username=request.form.get('login')
+        password = request.form.get('password')
+    return render_template("login.html", form=form)
 
 
 @app.route("/index/create", methods=['post','get'])
