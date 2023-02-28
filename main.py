@@ -36,10 +36,12 @@ def create_table():
     db.session.add(model1)
     db.session.add(model2)
     db.session.add(model3)
-
-    lot1 = LotModel(1, 700000, 25000, 2015,'Red',"Yekaterinburg")
-    lot2 = LotModel(1, 750000, 35000, 2012,'Grey',"Yekaterinburg")
-    lot3 = LotModel(3,1250000, 35000, 2018,'Yellow',"Yekaterinburg")
+    user = User('Petya', 'ppetr@mail.ru', "12345")
+    db.session.add(user)
+    db.session.commit()
+    lot1 = LotModel(1, 700000, 25000, 2015,'Red',"Yekaterinburg",[user])
+    lot2 = LotModel(1, 750000, 35000, 2012,'Grey',"Yekaterinburg",[user])
+    lot3 = LotModel(3,1250000, 35000, 2018,'Yellow',"Yekaterinburg",[user])
     db.session.add(lot1)
     db.session.add(lot2)
     db.session.add(lot3)
@@ -51,9 +53,7 @@ def create_table():
     db.session.add(lot2)
     db.session.add(lot3)
     db.session.commit()
-    user=User('Petya','ppetr@mail.ru',"12345")
-    db.session.add(user)
-    db.session.commit()
+
 
 
 
