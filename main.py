@@ -19,7 +19,7 @@ login_manager=LoginManager(app)
 def load_user(user_id):
     return db.session.query(User).get(user_id)
 
-#@app.before_first_request
+@app.before_first_request
 def create_table():
     db.drop_all()
     db.create_all()
@@ -37,9 +37,12 @@ def create_table():
     db.session.add(model2)
     db.session.add(model3)
 
-    lot1 = LotModel(1, 700000, 25000, 2015,'Red',"Yekaterinburg")
-    lot2 = LotModel(1, 750000, 35000, 2012,'Grey',"Yekaterinburg")
-    lot3 = LotModel(3,1250000, 35000, 2018,'Yellow',"Yekaterinburg")
+    user=User('Petya','ppetr@mail.ru',"12345")
+    db.session.add(user)
+    db.session.commit()
+    lot1 = LotModel(1, 700000, 25000, 2015,'Red',"Yekaterinburg",[user])
+    lot2 = LotModel(1, 750000, 35000, 2012,'Grey',"Yekaterinburg",[user])
+    lot3 = LotModel(3,1250000, 35000, 2018,'Yellow',"Yekaterinburg",[user])
     db.session.add(lot1)
     db.session.add(lot2)
     db.session.add(lot3)
@@ -50,9 +53,6 @@ def create_table():
     db.session.add(lot1)
     db.session.add(lot2)
     db.session.add(lot3)
-    db.session.commit()
-    user=User('Petya','ppetr@mail.ru',"12345")
-    db.session.add(user)
     db.session.commit()
 
 
@@ -129,7 +129,7 @@ def lot_create_user():
         color=request.form['color']
         location = request.form['location']
         print(current_user)
-        lot = LotModel(model.id, price, mileage, prod_year, color, location, current_user)
+        lot = LotModel(model.id, price, mileage, prod_year, color, location, [current_user])
         db.session.add(lot)
         db.session.commit()
         if 'file' not in request.files:
