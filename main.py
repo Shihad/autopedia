@@ -1,7 +1,11 @@
-from flask import Flask, render_template, request, redirect,flash
-from models import db, AutolabelModel, AutomodelsModel, LotModel
-from forms import LoginForm, SignUpForm
 import os
+
+from flask import Flask, render_template, request, redirect, flash
+from flask_login import LoginManager, current_user, login_required, login_user
+
+from models import db, AutolabelModel, AutomodelsModel, LotModel, User
+from forms import LoginForm, RegisterForm
+
 
 app = Flask(__name__)
 app.secret_key = 'some_secret_key'
@@ -9,8 +13,13 @@ app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'you_cant_guess_this_key'
 db.init_app(app)
+login_manager=LoginManager(app)
 
-@app.before_first_request
+@login_manager.user_loader
+def load_user(user_id):
+    return db.session.query(User).get(user_id)
+
+#@app.before_first_request
 def create_table():
     db.drop_all()
     db.create_all()
@@ -42,6 +51,9 @@ def create_table():
     db.session.add(lot2)
     db.session.add(lot3)
     db.session.commit()
+    user=User('Petya','ppetr@mail.ru',"12345")
+    db.session.add(user)
+    db.session.commit()
 
 
 
@@ -52,6 +64,12 @@ def index():
     labels=AutolabelModel.query.all()
     return render_template('index.html', lots=lots,labels=labels)
 
+
+@app.route("/autorized")
+@login_required
+def autorized():
+    return "Вы успешно авторизовались!"
+
 @app.route("/login", methods=['post','get'])
 def login():
     username=""
@@ -60,23 +78,19 @@ def login():
     if form.validate_on_submit():
         username=request.form.get('login')
         password = request.form.get('password')
+        user = User.query.filter_by(username=username).first()
+        if user:
+            if user.check_password(password):
+                print(f'User {user} login')
+                login_user(user, remember=False)
+                return redirect("/autorized")
+            else:
+                print(f"Пароли не совпадают")
+        else:
+            print(f"Нет такого пользователя")
     return render_template("login.html", form=form)
 
 
-@app.route("/signup", methods=['post','get'])
-def signup():
-    username=""
-    password=""
-    password2=""
-    email=""
-    form = SignUpForm()
-    if form.validate_on_submit():
-        password2=request.form.get('password2')
-        password = request.form.get('password')
-        if password == password2:
-            username=request.form.get('login')
-            email = request.form.get('email')
-    return render_template("signup.html", form=form)
 
 @app.route('/register', methods=['post','get'])
 def register():
@@ -86,16 +100,26 @@ def register():
     repeat_password=''
     form = RegisterForm()
     if form.validate_on_submit():
-        username=request.form.get('login')
-        password=request.form.get('password')
-    return render_template("login.html", form=form)
+        password2 = request.form.get('password2')
+        password = request.form.get('password')
+        if password == password2:
+            username = request.form.get('login')
+            email = request.form.get('email')
+            print(username,email)
+            user=User(username,email,password)
+            db.session.add(user)
+            db.session.commit()
+    return render_template("signup.html", form=form)
 
 
 @app.route("/index/create", methods=['post','get'])
 def lot_create_user():
     if request.method=="GET":
-        models = AutomodelsModel.query.all()
-        return render_template('lot_create.html',models=models)
+        if current_user.is_authenticated:
+            models = AutomodelsModel.query.all()
+            return render_template('lot_create.html',models=models)
+        else:
+            return redirect("\login")
     if request.method=="POST":
         model_name=request.form['model']
         model = AutomodelsModel.query.filter_by(label=model_name).first()
@@ -104,7 +128,8 @@ def lot_create_user():
         prod_year=request.form['prod_year']
         color=request.form['color']
         location = request.form['location']
-        lot = LotModel(model.id, price, mileage, prod_year, color, location)
+        print(current_user)
+        lot = LotModel(model.id, price, mileage, prod_year, color, location, current_user)
         db.session.add(lot)
         db.session.commit()
         if 'file' not in request.files:
@@ -245,5 +270,6 @@ def update_model(model):
         lots.extend(LotModel.query.filter_by(model_id=model.id).all())
     print(lots)
     return render_template('index.html', lots=lots, labels=labels)
+
 
 app.run()

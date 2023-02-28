@@ -7,30 +7,30 @@
 </head>
 <body>
 <form action="" method="post">
-  {% form.csrf_token() %}
+  {{ form.csrf_token() }}
   {{ form.login.label()}}
-  {% for error in form.login.errors() %}
+  {% for error in form.login.errors %}
   {{error}}
   {% endfor %}
   {{ form.login()}}
   <br>
    {{ form.password.label()}}
-  {% for error in form.password.errors() %}
+  {% for error in form.password.errors %}
   {{error}}
   {% endfor %}
   {{ form.password()}}
    <br>
    {{ form.password2.label()}}
-  {% for error in form.password2.errors() %}
+  {% for error in form.password2.errors %}
   {{error}}
   {% endfor %}
-  {{ form.password()}}
+  {{ form.password2()}}
     <br>
    {{ form.email.label()}}
-  {% for error in form.email.errors() %}
+  {% for error in form.email.errors %}
   {{error}}
   {% endfor %}
-  {{ form.password()}}
+  {{ form.email()}}
    <br>
   {{ form.submit() }}
 </form>

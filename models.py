@@ -1,4 +1,6 @@
 from  flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import check_password_hash, generate_password_hash
+from flask_login import UserMixin
 
 db = SQLAlchemy()
 
@@ -44,7 +46,7 @@ class AutomodelsModel(db.Model):
         return f"{self.label} was model for {self.producer.label} and production started in {self.start_prod_year}"
 
 class LotModel(db.Model):
-    __tablename__="lot"
+    __tablename__="lots"
 
     id=db.Column(db.Integer, primary_key=True)
     model_id=db.Column(db.Integer(),db.ForeignKey('models.id'))
@@ -54,14 +56,16 @@ class LotModel(db.Model):
     color=db.Column(db.String)
     photo=db.Column(db.String)
     location=db.Column(db.String)
+    author = db.relationship('User', backref='author')
 
-    def __init__(self,model_id,price,mileage,prod_year,color,location):
+    def __init__(self,model_id,price,mileage,prod_year,color,location, user):
         self.model_id=model_id
         self.price=price
         self.mileage=mileage
         self.prod_year=prod_year
         self.color=color
         self.location=location
+        self.author=user
 
     def set_photo(self, photo):
         self.photo = f"img/lots/{self.id}/1.png"
@@ -80,3 +84,20 @@ class PhotoModel(db.Model):
 
     def set_photo(self, photo):
         self.photo = f"img/lots/{self.id}/1.png"
+
+class User(db.Model, UserMixin):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    username=db.Column(db.String(50), unique=True )
+    email=db.Column(db.String(50), unique=True)
+    password=db.Column(db.String(50))
+    lots_id = db.Column(db.Integer, db.ForeignKey(LotModel.id))
+
+    def __init__(self, username, email, password):
+        self.username = username
+        self.email = email
+        hash = generate_password_hash(password)
+        self.password = hash
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
