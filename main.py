@@ -89,6 +89,9 @@ def login():
             print(f"Нет такого пользователя")
     return render_template("login.html", form=form)
 
+@app.route('/logout')
+def logout():
+    return redirect('/login')
 
 
 @app.route('/register', methods=['post','get'])
