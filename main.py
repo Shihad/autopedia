@@ -158,77 +158,83 @@ def lot_create_user():
 @app.route("/admin")
 def admin_panel():
     if current_user.admin:
-        pass
+        return render_template('admin.html')
     #страница с кнопками "показать список моделей", "показать список автомарок"
     #проверка на админа
 
 @app.route("/labels")
 @login_required
 def label_list():
-    labels=AutolabelModel.query.all()
-    return render_template('labels.html', autolabels=labels)
+    if current_user.admin:
+        labels=AutolabelModel.query.all()
+        return render_template('labels.html', autolabels=labels)
 
 @app.route("/labels/<l_id>")
 @login_required
 def label(l_id):
-    label = AutolabelModel.query.filter_by(id=l_id).first()
-    return render_template('label.html', autolabel=label)
+    if current_user.admin:
+        label = AutolabelModel.query.filter_by(id=l_id).first()
+        return render_template('label.html', autolabel=label)
 
 @app.route("/labels/create", methods=['post','get'])
 @login_required
 def label_create():
-    if request.method=="GET":
-        return render_template('label_create.html')
-    if request.method=="POST":
-        label_name=request.form['label']
-        country = request.form['country']
-        f_year=request.form['f_year']
-        l_year=request.form['l_year']
-        if l_year=="":
-            l_year=None
-        if 'file' not in request.files:
-            flash("No file part")
+    if current_user.admin:
+        if request.method=="GET":
             return render_template('label_create.html')
-        file=request.files['file']
-        if file.filename == '':
-            flash('No selected file')
-            return render_template('label_create.html')
-        if file:
-            file.save(os.path.join(f"static/img/labels", f"{label_name}.png"))
-        label = AutolabelModel(label_name, country, f_year,l_year)
-        db.session.add(label)
-        db.session.commit()
-        return redirect("/labels")
+        if request.method=="POST":
+            label_name=request.form['label']
+            country = request.form['country']
+            f_year=request.form['f_year']
+            l_year=request.form['l_year']
+            if l_year=="":
+                l_year=None
+            if 'file' not in request.files:
+                flash("No file part")
+                return render_template('label_create.html')
+            file=request.files['file']
+            if file.filename == '':
+                flash('No selected file')
+                return render_template('label_create.html')
+            if file:
+                file.save(os.path.join(f"static/img/labels", f"{label_name}.png"))
+            label = AutolabelModel(label_name, country, f_year,l_year)
+            db.session.add(label)
+            db.session.commit()
+            return redirect("/labels")
 
 
 @app.route("/models")
 @login_required
 def model_list():
-    models=AutomodelsModel.query.all()
-    return render_template('models.html', automodels=models)
+    if current_user.admin:
+        models=AutomodelsModel.query.all()
+        return render_template('models.html', automodels=models)
 
 @app.route("/models/<m_id>")
 @login_required
 def model(m_id):
-    model = AutomodelsModel.query.filter_by(id=m_id).first()
-    return render_template('model.html', automodel=model)
+    if current_user.admin:
+        model = AutomodelsModel.query.filter_by(id=m_id).first()
+        return render_template('model.html', automodel=model)
 
 @app.route("/models/create", methods=['post','get'])
 @login_required
 def model_create():
-    if request.method=="GET":
-        return render_template('model_create.html')
-    if request.method=="POST":
-        label_name=request.form['label']
-        producer = request.form['producer']
-        f_year=request.form['f_year']
-        l_year=request.form['l_year']
-        if l_year=="":
-            l_year=None
-        model = AutomodelsModel(label_name, producer, f_year,l_year)
-        db.session.add(model)
-        db.session.commit()
-        return redirect("/models")
+    if current_user.admin:
+        if request.method=="GET":
+            return render_template('model_create.html')
+        if request.method=="POST":
+            label_name=request.form['label']
+            producer = request.form['producer']
+            f_year=request.form['f_year']
+            l_year=request.form['l_year']
+            if l_year=="":
+               l_year=None
+            model = AutomodelsModel(label_name, producer, f_year,l_year)
+            db.session.add(model)
+            db.session.commit()
+            return redirect("/models")
 
 @app.route("/lots")
 @login_required
