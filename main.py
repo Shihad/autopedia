@@ -36,7 +36,6 @@ def create_table():
     db.session.add(model1)
     db.session.add(model2)
     db.session.add(model3)
-
     user=User('Petya','ppetr@mail.ru',"12345")
     db.session.add(user)
     db.session.commit()
@@ -54,6 +53,7 @@ def create_table():
     db.session.add(lot2)
     db.session.add(lot3)
     db.session.commit()
+
 
 
 

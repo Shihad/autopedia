@@ -3,9 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+        .maii{
+        text-align:center;
+        width:350px;
+        height300px;
+        border: inset gray 5px;
+        border-radius: 10px;
+        margin-left: auto;
+        margin-right: auto;
+        background-color: #DCDCDC
+        }
+
+
+
+
+
+    </style>
 </head>
 <body>
-<form action="" method="post">
+<form action="" method="post" class="maii">
   {{ form.csrf_token() }}
   {{ form.login.label() }}
   {% for error in form.login.errors %}
@@ -18,6 +35,8 @@
   {{error}}
   {% endfor %}
   {{ form.password()}}
+    <h4>Нет учетной записи?<a href="register">создайте</a> её!</h4>
+
    <br>
   {{ form.submit() }}
 </form>
