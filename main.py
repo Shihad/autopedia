@@ -38,6 +38,9 @@ def create_table():
     db.session.add(model3)
     user=User('Petya','ppetr@mail.ru',"12345")
     db.session.add(user)
+    admin = User('Vasya', 'vasya@mail.ru', "nimda")
+    admin.admin=True
+    db.session.add(admin)
     db.session.commit()
     lot1 = LotModel(1, 700000, 25000, 2015,'Red',"Yekaterinburg",[user])
     lot2 = LotModel(1, 750000, 35000, 2012,'Grey',"Yekaterinburg",[user])
@@ -65,10 +68,6 @@ def index():
     return render_template('index.html', lots=lots,labels=labels)
 
 
-@app.route("/autorized")
-@login_required
-def autorized():
-    return "Вы успешно авторизовались!"
 
 @app.route("/login", methods=['post','get'])
 def login():
@@ -83,7 +82,7 @@ def login():
             if user.check_password(password):
                 print(f'User {user} login')
                 login_user(user, remember=False)
-                return redirect("/autorized")
+                return redirect("/index")
             else:
                 print(f"Пароли не совпадают")
         else:
@@ -105,10 +104,15 @@ def register():
         if password == password2:
             username = request.form.get('login')
             email = request.form.get('email')
-            print(username,email)
+            # добавить проверку на уже существующего пользователя
+            # добавить проверку на уже существующий емэйл
+            if User.query.filter_by(username=username).first():
+                print("Пользователь есть")
+                return render_template("signup.html", form=form,message="Такой пользователь уже есть")
             user=User(username,email,password)
             db.session.add(user)
             db.session.commit()
+            return redirect("/login")
     return render_template("signup.html", form=form)
 
 
@@ -119,7 +123,7 @@ def lot_create_user():
             models = AutomodelsModel.query.all()
             return render_template('lot_create.html',models=models)
         else:
-            return redirect("\login")
+            return redirect("/login")
     if request.method=="POST":
         model_name=request.form['model']
         model = AutomodelsModel.query.filter_by(label=model_name).first()
@@ -128,7 +132,6 @@ def lot_create_user():
         prod_year=request.form['prod_year']
         color=request.form['color']
         location = request.form['location']
-        print(current_user)
         lot = LotModel(model.id, price, mileage, prod_year, color, location, [current_user])
         db.session.add(lot)
         db.session.commit()
@@ -149,18 +152,27 @@ def lot_create_user():
         db.session.commit()
         return redirect("/index")
 
+@app.route("/admin")
+def admin_panel():
+    if current_user.admin:
+        pass
+    #страница с кнопками "показать список моделей", "показать список автомарок"
+    #проверка на админа
 
 @app.route("/labels")
+@login_required
 def label_list():
     labels=AutolabelModel.query.all()
     return render_template('labels.html', autolabels=labels)
 
 @app.route("/labels/<l_id>")
+@login_required
 def label(l_id):
     label = AutolabelModel.query.filter_by(id=l_id).first()
     return render_template('label.html', autolabel=label)
 
 @app.route("/labels/create", methods=['post','get'])
+@login_required
 def label_create():
     if request.method=="GET":
         return render_template('label_create.html')
@@ -187,16 +199,19 @@ def label_create():
 
 
 @app.route("/models")
+@login_required
 def model_list():
     models=AutomodelsModel.query.all()
     return render_template('models.html', automodels=models)
 
 @app.route("/models/<m_id>")
+@login_required
 def model(m_id):
     model = AutomodelsModel.query.filter_by(id=m_id).first()
     return render_template('model.html', automodel=model)
 
 @app.route("/models/create", methods=['post','get'])
+@login_required
 def model_create():
     if request.method=="GET":
         return render_template('model_create.html')
@@ -213,16 +228,19 @@ def model_create():
         return redirect("/models")
 
 @app.route("/lots")
+@login_required
 def lots_list():
     lots=LotModel.query.all()
     return render_template('lots.html', autolots=lots)
 
 @app.route("/lots/<l_id>")
+@login_required
 def lot(l_id):
     lot = LotModel.query.filter_by(id=l_id).first()
     return render_template('lot.html', autolot=lot)
 
 @app.route("/lots/create", methods=['post','get'])
+@login_required
 def lot_create_admin():
     if request.method=="GET":
         models = AutomodelsModel.query.all()
@@ -250,6 +268,7 @@ def lot_create_admin():
         return redirect("/lots")
 
 @app.route("/api/index/update/<label>")
+@login_required
 def update_label(label):
     label_id=AutolabelModel.query.filter_by(label=label).first().id
     models=AutomodelsModel.query.filter_by(prod_id=label_id).all()
@@ -262,6 +281,7 @@ def update_label(label):
 
 
 @app.route("/api/index/updatemodel/<model>")
+@login_required
 def update_model(model):
     labels=AutolabelModel.query.filter_by(model=model).all
     models=AutomodelsModel.query.filter_by(prod_id=label.id).all()

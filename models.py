@@ -92,12 +92,14 @@ class User(db.Model, UserMixin):
     email=db.Column(db.String(50), unique=True)
     password=db.Column(db.String(50))
     lots_id = db.Column(db.Integer, db.ForeignKey(LotModel.id))
+    admin=db.Column(db.Boolean)
 
     def __init__(self, username, email, password):
         self.username = username
         self.email = email
         hash = generate_password_hash(password)
         self.password = hash
+        self.admin=False
 
     def check_password(self, password):
         return check_password_hash(self.password, password)

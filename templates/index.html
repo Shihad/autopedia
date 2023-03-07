@@ -20,15 +20,23 @@
         <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"></use></svg>
       </a>
 
-
+	{% if current_user.is_authenticated %}
+	<div class="headerlogin">
+        <span>{{current_user.username}}</span>
+		  <button type="button" class="btn btn-primary" onclick="window.location.href = '/logout';">Выйти</button>
+      </div>
+	{% else %}
       <div class="headerlogin">
         <button type="button" class="btn btn-outline-primary me-2" onclick="window.location.href = '/login';">Login</button>
 		  <button type="button" class="btn btn-primary" onclick="window.location.href = '/register';">Sign-up</button>
       </div>
+	{% endif %}
 </header>
+{% if current_user.is_authenticated %}
 	<div class="create_lot">
-		<a href="/index/create">Подать объявление</a>
+		<button type="button" class="btn btn-primary" onclick="window.location.href = '/index/create';">Подать объявление</button>
 	</div>
+{% endif %}
     <form>
   <div class="form-row">
 		<div class="firstrow">
