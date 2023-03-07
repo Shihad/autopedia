@@ -1,11 +1,10 @@
 import os
 
-from flask import Flask, render_template, request, redirect, flash
-from flask_login import LoginManager, current_user, login_required, login_user
+from flask import Flask, render_template, request, redirect, flash, session
+from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 
 from models import db, AutolabelModel, AutomodelsModel, LotModel, User
 from forms import LoginForm, RegisterForm
-
 
 app = Flask(__name__)
 app.secret_key = 'some_secret_key'
@@ -91,6 +90,10 @@ def login():
 
 @app.route('/logout')
 def logout():
+    logout_user()
+    if session.get('was_once_logged_in'):
+        del session['was_once_logged_in']
+    flash('You have successfully logged yourself out.')
     return redirect('/login')
 
 
