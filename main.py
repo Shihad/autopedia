@@ -112,6 +112,9 @@ def register():
             if User.query.filter_by(username=username).first():
                 print("Пользователь есть")
                 return render_template("signup.html", form=form,message="Такой пользователь уже есть")
+            if User.query.filter_by(email=email).first():
+                print("почта уже зарегестрирована")
+                return render_template("signup.html", form=form, message="такая почта уже зарегестрирована")
             user=User(username,email,password)
             db.session.add(user)
             db.session.commit()
