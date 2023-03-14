@@ -94,7 +94,7 @@ def logout():
     if session.get('was_once_logged_in'):
         del session['was_once_logged_in']
     flash('You have successfully logged yourself out.')
-    return redirect('/login')
+    return redirect('/index')
 
 
 @app.route('/register', methods=['post','get'])
@@ -117,7 +117,7 @@ def register():
                 return render_template("signup.html", form=form,message="Такой пользователь уже есть")
             if User.query.filter_by(email=email).first():
                 print("почта уже зарегестрирована")
-                return render_template("signup.html", form=form, message="такая почта уже зарегестрирована")
+                return render_template("signup.html", form=form, message="Такая почта уже зарегистрирована")
             user=User(username,email,password)
             db.session.add(user)
             db.session.commit()
@@ -165,6 +165,8 @@ def lot_create_user():
 def admin_panel():
     if current_user.admin:
         return render_template('admin.html')
+    else:
+        return redirect("/index")
     #страница с кнопками "показать список моделей", "показать список автомарок"
     #проверка на админа
 
@@ -174,6 +176,8 @@ def label_list():
     if current_user.admin:
         labels=AutolabelModel.query.all()
         return render_template('labels.html', autolabels=labels)
+    else:
+        return redirect("/index")
 
 @app.route("/labels/<l_id>")
 @login_required
@@ -181,6 +185,8 @@ def label(l_id):
     if current_user.admin:
         label = AutolabelModel.query.filter_by(id=l_id).first()
         return render_template('label.html', autolabel=label)
+    else:
+        return redirect("/index")
 
 @app.route("/labels/create", methods=['post','get'])
 @login_required
@@ -208,6 +214,8 @@ def label_create():
             db.session.add(label)
             db.session.commit()
             return redirect("/labels")
+    else:
+        return redirect("/index")
 
 
 @app.route("/models")
@@ -216,6 +224,8 @@ def model_list():
     if current_user.admin:
         models=AutomodelsModel.query.all()
         return render_template('models.html', automodels=models)
+    else:
+        return redirect("/index")
 
 @app.route("/models/<m_id>")
 @login_required
@@ -223,6 +233,8 @@ def model(m_id):
     if current_user.admin:
         model = AutomodelsModel.query.filter_by(id=m_id).first()
         return render_template('model.html', automodel=model)
+    else:
+        return redirect("/index")
 
 @app.route("/models/create", methods=['post','get'])
 @login_required
@@ -241,70 +253,87 @@ def model_create():
             db.session.add(model)
             db.session.commit()
             return redirect("/models")
+    else:
+        return redirect("/index")
 
 @app.route("/lots")
 @login_required
 def lots_list():
-    lots=LotModel.query.all()
-    return render_template('lots.html', autolots=lots)
+    if current_user.admin:
+        lots=LotModel.query.all()
+        return render_template('lots.html', autolots=lots)
+    else:
+        return redirect("/index")
 
 @app.route("/lots/<l_id>")
 @login_required
 def lot(l_id):
-    lot = LotModel.query.filter_by(id=l_id).first()
-    return render_template('lot.html', autolot=lot)
+    if current_user.admin:
+        lot = LotModel.query.filter_by(id=l_id).first()
+        return render_template('lot.html', autolot=lot)
+    else:
+        return redirect("/index")
 
 @app.route("/lots/create", methods=['post','get'])
 @login_required
 def lot_create_admin():
-    if request.method=="GET":
-        models = AutomodelsModel.query.all()
-        return render_template('lot_create.html',models=models)
-    if request.method=="POST":
-        model_name=request.form['model']
-        model = AutomodelsModel.query.filter_by(label=model_name).first()
-        price=request.form['price']
-        mileage=request.form['mileage']
-        prod_year=request.form['prod_year']
-        color=request.form['color']
-        location = request.form['location']
-        if 'file' not in request.files:
-            flash("No file part")
-            return render_template('lot_create.html')
-        file = request.files['file']
-        if file.filename == '':
-            flash('No selected file')
-            return render_template('lot_create.html')
-        if file:
-            file.save(os.path.join(f"static/img/labels", f"{model_name}.png"))
-        lot = LotModel(model.id, price, mileage,prod_year, color, location)
-        db.session.add(lot)
-        db.session.commit()
-        return redirect("/lots")
+    if current_user.admin:
+        if request.method=="GET":
+            models = AutomodelsModel.query.all()
+            return render_template('lot_create.html',models=models)
+        if request.method=="POST":
+            model_name=request.form['model']
+            model = AutomodelsModel.query.filter_by(label=model_name).first()
+            price=request.form['price']
+            mileage=request.form['mileage']
+            prod_year=request.form['prod_year']
+            color=request.form['color']
+            location = request.form['location']
+            if 'file' not in request.files:
+                flash("No file part")
+                return render_template('lot_create.html')
+            file = request.files['file']
+            if file.filename == '':
+                flash('No selected file')
+                return render_template('lot_create.html')
+            if file:
+                file.save(os.path.join(f"static/img/labels", f"{model_name}.png"))
+            lot = LotModel(model.id, price, mileage,prod_year, color, location)
+            db.session.add(lot)
+            db.session.commit()
+            return redirect("/lots")
+    else:
+        return redirect("/index")
 
 @app.route("/api/index/update/<label>")
 @login_required
 def update_label(label):
-    label_id=AutolabelModel.query.filter_by(label=label).first().id
-    models=AutomodelsModel.query.filter_by(prod_id=label_id).all()
-    lots=[]
-    for model in models:
-        lots.extend(LotModel.query.filter_by(model_id=model.id).all())
-    print(lots)
-    labels = AutolabelModel.query.all()
-    return render_template('index.html', lots=lots, labels=labels)
+    if current_user.admin:
+        label_id=AutolabelModel.query.filter_by(label=label).first().id
+        models=AutomodelsModel.query.filter_by(prod_id=label_id).all()
+        lots=[]
+        for model in models:
+            lots.extend(LotModel.query.filter_by(model_id=model.id).all())
+        print(lots)
+        labels = AutolabelModel.query.all()
+        return render_template('index.html', lots=lots, labels=labels)
+    else:
+        return redirect("/index")
 
 
 @app.route("/api/index/updatemodel/<model>")
 @login_required
 def update_model(model):
-    labels=AutolabelModel.query.filter_by(model=model).all
-    models=AutomodelsModel.query.filter_by(prod_id=label.id).all()
-    lots=[]
-    for model in models:
-        lots.extend(LotModel.query.filter_by(model_id=model.id).all())
-    print(lots)
-    return render_template('index.html', lots=lots, labels=labels)
+    if current_user.admin:
+        labels=AutolabelModel.query.filter_by(model=model).all
+        models=AutomodelsModel.query.filter_by(prod_id=label.id).all()
+        lots=[]
+        for model in models:
+            lots.extend(LotModel.query.filter_by(model_id=model.id).all())
+        print(lots)
+        return render_template('index.html', lots=lots, labels=labels)
+    else:
+        return redirect("/index")
 
 
 app.run()

@@ -5,8 +5,12 @@
     <title>Title</title>
 </head>
 <body>
+    <div class="">
+		<button type="button" class="btn btn-primary" onclick="window.location.href = '/labels/create';">Создать марку</button>
+	</div>
   {% for label in autolabels %}
-    <div>{{label}}</div>
+    <div><a href="/labels/{{label.id}}">{{label}}</a></div>
+
 {% endfor %}
 </body>
 </html>
